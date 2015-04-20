@@ -46,6 +46,28 @@ public class Main {
 			}
 		}
 	}
+	
+	private static String filterFilename(String fn){
+		if (fn== null) {
+			return fn;
+		}
+		char windowsBannedChar[] = new char[]{'\\', '/',':','*','?', '"', '<', '>', '|'};
+		StringBuilder sb = new StringBuilder();
+		for(int i = 0;i<fn.length();++i){
+			boolean isInBannedCharSet = false;
+			for(int j = 0;j<windowsBannedChar.length;++j){
+				if(windowsBannedChar[j] == fn.charAt(i)){
+					isInBannedCharSet = true;
+					break;
+				}
+			}
+			if(!isInBannedCharSet){
+				sb.append(fn.charAt(i));
+			}
+		}
+		return sb.toString();
+	}
+	
 
 	private static boolean processFile(File file) {
 		if (!file.canWrite()) {
@@ -59,6 +81,7 @@ public class Main {
 		PdfDataExtractor extractor = new PdfDataExtractor(file);
 		try {
 			String title = extractor.extractTitle();
+			title = filterFilename(title);
 			if (title != null && isNameLegal(title)) {
 				if (renameFile(file, title + ".pdf")) {
 					++sucCnt;
